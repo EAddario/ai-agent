@@ -1,0 +1,25 @@
+{
+  "name": "ai-agent",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "npx tsx index.ts"
+  },
+  "overrides": {
+    "whatwg-url": "13.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "got": "^14.4.5",
+    "lowdb": "^7.0.1",
+    "openai": "^4.79.1",
+    "ora": "^8.1.1",
+    "terminal-image": "^3.1.1",
+    "tsx": "^4.19.2",
+    "uuid": "^11.0.5",
+    "zod": "^3.24.1",
+    "dotenv": "^16.4.7"
+  }
+}
