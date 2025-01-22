@@ -1,7 +1,7 @@
 // @ts-ignore
-import { z } from 'zod'
-import type { ToolFn } from '../../types.ts'
-import fetch from 'node-fetch'
+import { z } from 'zod';
+import fetch from 'node-fetch';
+import type { ToolFn } from '../../types.ts';
 
 export const myIPToolDefinition = {
   name: 'my_ip',
@@ -11,13 +11,14 @@ export const myIPToolDefinition = {
     .describe('Use this tool to get my public IP. It will return a JSON object with the ip, country and two letter ISO country code.')
 }
 
-type Args = z.infer<typeof myIPToolDefinition.parameters>
+type Args = z.infer<typeof myIPToolDefinition.parameters>;
 
 export const myIP: ToolFn<Args, string> = async ({ toolArgs }) => {
   const res = await fetch('https://api.myip.com', {
     headers: {
-      Accept: 'application/json',
+      Accept: 'application/json'
     }
-  })
-  return (await res.json()).ip
+  });
+
+  return (await res.json()).ip;
 }

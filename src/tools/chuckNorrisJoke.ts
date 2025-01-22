@@ -1,7 +1,7 @@
 // @ts-ignore
-import { z } from 'zod'
-import type { ToolFn } from '../../types.ts'
-import fetch from 'node-fetch'
+import { z } from 'zod';
+import fetch from 'node-fetch';
+import type { ToolFn } from '../../types.ts';
 
 export const chuckNorrisJokeToolDefinition = {
   name: 'chuck_norris_joke',
@@ -11,13 +11,14 @@ export const chuckNorrisJokeToolDefinition = {
     .describe('Use this tool to get a random Chuck Norris joke. It will return a JSON object with the icon, id, url and the joke.')
 }
 
-type Args = z.infer<typeof chuckNorrisJokeToolDefinition.parameters>
+type Args = z.infer<typeof chuckNorrisJokeToolDefinition.parameters>;
 
 export const chuckNorrisJoke: ToolFn<Args, string> = async ({ toolArgs }) => {
   const res = await fetch('https://api.chucknorris.io/jokes/random', {
     headers: {
       Accept: 'application/json',
     },
-  })
-  return (await res.json()).value
+  });
+
+  return (await res.json()).value;
 }

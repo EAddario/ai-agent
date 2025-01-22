@@ -10,7 +10,4 @@ if (!userMessage) {
   process.exit(1);
 }
 
-const messages = await runAgent({
-  userMessage,
-  tools,
-});
+const messages = await runAgent({ userMessage, tools });
