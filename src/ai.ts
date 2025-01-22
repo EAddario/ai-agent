@@ -7,6 +7,7 @@ export const openai = new OpenAI({
   baseURL: process.env.AI_BASE_URL,
   apiKey: process.env.AI_API_KEY,
   defaultHeaders: {
-    "X-Title": 'AI Agent'
+    "HTTP-Referer": "https://github.com/EAddario/ai-agent",
+    "X-Title": "AI Agent"
   }
 });
