@@ -1,5 +1,6 @@
 // @ts-ignore
 import { z } from 'zod';
+import { clearLIFOMessages } from './memory.js';
 import { openai } from './ai.ts';
 import { systemPrompt } from './systemPrompt.ts';
 import { zodFunction } from 'openai/helpers/zod';
@@ -26,5 +27,13 @@ export const runLLM = async ({
     parallel_tool_calls: false
   });
 
-  return response.choices[0].message
+  try {
+    const result: AIMessage = response.choices[0].message;
+
+    return result;
+  } catch (e) {
+    console.error('\n\nError parsing response from provider: ', response);
+    await clearLIFOMessages(1);
+    process.exit(1);
+  }
 }
