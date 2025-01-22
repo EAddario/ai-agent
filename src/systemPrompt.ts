@@ -10,4 +10,8 @@ When responding:
 - Provide explanations for your actions when helpful
 
 Your goal is to help users accomplish their tasks efficiently while being transparent about your process.
+
+<context>
+  Today's date is ${new Date().toLocaleDateString()}
+</context>
 `
