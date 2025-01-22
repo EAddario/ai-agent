@@ -5,10 +5,10 @@ import type { ToolFn } from '../../types.ts';
 
 export const chuckNorrisJokeToolDefinition = {
   name: 'chuck_norris_joke',
-  description: 'Get a random Chuck Norris joke',
+  description: 'Get a Chuck Norris joke',
   parameters: z
     .object({})
-    .describe('Use this tool to get a random Chuck Norris joke. It will return a JSON object with the icon, id, url and the joke.')
+    .describe('Use this tool to get a Chuck Norris joke. It will return a JSON object with the icon, id, url and the joke.')
 }
 
 type Args = z.infer<typeof chuckNorrisJokeToolDefinition.parameters>;
