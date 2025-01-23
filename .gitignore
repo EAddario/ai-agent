@@ -1,5 +1,11 @@
 # https://github.com/github/gitignore
 
+# ----------------
+# Project Specific
+# ----------------
+db.json
+results.json
+
 # -------------
 # General Linux
 # -------------
