@@ -3,12 +3,16 @@ import {z} from 'zod';
 import fetch from 'node-fetch';
 import type {ToolFn} from '../../types.ts';
 
+const toolDescription = `
+This tool must always be used whenever the user asks or refers to Reddit posts.
+This tool must never be used if the user doesn't specifically asks for Reddit posts.
+It will return a JSON object with the title, link, subreddit name, author, and number of upvotes of each post.
+`;
+
 export const redditToolDefinition = {
     name: 'reddit',
-    description: 'Get the latest posts from Reddit',
-    parameters: z
-        .object({})
-        .describe('Use this tool to get the latest posts from Reddit. It will return a JSON object with the title, link, subreddit, author, and upvotes of each post.')
+    description: toolDescription,
+    parameters: z.object({})
 }
 
 type Args = z.infer<typeof redditToolDefinition.parameters>;

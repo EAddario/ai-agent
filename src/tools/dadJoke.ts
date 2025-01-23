@@ -3,12 +3,17 @@ import {z} from 'zod';
 import fetch from 'node-fetch';
 import type {ToolFn} from '../../types.ts';
 
+const toolDescription = `
+This tool must always be used whenever the user asks or refers to a Dad joke.
+This tool must also be used whenever the user asks for a joke without specifing which type.
+This tool must also be used whenever the user asks if you know any jokes without specifing which type.
+It will return a JSON object with the id, status and joke.
+`;
+
 export const dadJokeToolDefinition = {
     name: 'dad_joke',
-    description: 'Get a Dad joke',
-    parameters: z
-        .object({})
-        .describe('Use this tool to get a Dad joke. It will return a JSON object with the id, status and joke.')
+    description: toolDescription,
+    parameters: z.object({})
 }
 
 type Args = z.infer<typeof dadJokeToolDefinition.parameters>;

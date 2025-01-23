@@ -3,12 +3,16 @@ import {z} from 'zod';
 import fetch from 'node-fetch';
 import type {ToolFn} from '../../types.ts';
 
+const toolDescription = `
+This tool must always be used whenever the user asks or refers to a Chuck Norris joke.
+This tool must never be used if the user doesn't specifically asks for a Chuck Norris joke.
+It will return a JSON object with the icon, id, url and the joke.
+`;
+
 export const chuckNorrisJokeToolDefinition = {
     name: 'chuck_norris_joke',
-    description: 'Get a Chuck Norris joke',
-    parameters: z
-        .object({})
-        .describe('Use this tool to get a Chuck Norris joke. It will return a JSON object with the icon, id, url and the joke.')
+    description: toolDescription,
+    parameters: z.object({})
 }
 
 type Args = z.infer<typeof chuckNorrisJokeToolDefinition.parameters>;
