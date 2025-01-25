@@ -3,15 +3,15 @@ import {z} from 'zod';
 import {clearLIFOMessages} from './memory.js';
 import {openai} from './ai.ts';
 import {systemPrompt} from './systemPrompt.ts';
-import {zodFunction} from 'openai/helpers/zod';
+import {zodFunction, zodResponseFormat} from 'openai/helpers/zod';
 import type {AIMessage} from '../types.ts';
 
 export const runLLM = async ({
-                                 model = `${process.env.AI_MODEL}`,
-                                 messages,
-                                 temperature = 0.1,
-                                 tools
-                             }: {
+    model = `${process.env.AI_MODEL}`,
+    messages,
+    temperature = 0.1,
+    tools
+}: {
     messages: AIMessage[]
     temperature?: number
     model?: string
@@ -36,4 +36,21 @@ export const runLLM = async ({
         await clearLIFOMessages(1);
         process.exit(1);
     }
+}
+
+export const runApprovalCheck = async (userMessage: string) => {
+    const response = await openai.beta.chat.completions.parse({
+        model: `${process.env.AI_MODEL}`,
+        temperature: 0.1,
+        response_format: zodResponseFormat(
+            z.object({ approved: z.boolean().describe('Did the user say they approved or not?') }),
+            'approval_check'
+        ),
+        messages: [
+            { role: 'system', content: 'Determine if the user approved using the tool. If you are not sure, then it is not approved.' },
+            { role: 'user', content: userMessage }
+        ]
+    });
+
+    return response.choices[0].message.parsed?.approved;
 }
