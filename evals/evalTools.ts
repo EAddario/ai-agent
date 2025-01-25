@@ -151,3 +151,9 @@ export const runEval = async <T = any>(
 
     return results
 }
+
+export const resetResults = async () => {
+    const db = await getDb();
+    db.data.experiments = [];
+    await db.write();
+}
