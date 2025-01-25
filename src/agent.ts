@@ -1,20 +1,62 @@
 // @ts-ignore
 import {z} from 'zod';
+import type {AIMessage} from "../types.js";
 import {addMessages, getMessages, saveToolResponse} from './memory.ts';
 import {logMessage, showLoader} from './ui.ts';
-import {runLLM} from './llm.ts';
-import {runTool} from './toolRunner.ts';
+import {runApprovalCheck, runLLM} from './llm.ts';
+import {toolApprovalRequired, runTool} from './toolRunner.ts';
+
+const handleApprovalFlow = async (
+    history: AIMessage[],
+    userMessage: string
+) => {
+    const lastMessage = history[history.length - 1];
+    // @ts-ignore
+    const toolCall = lastMessage?.tool_calls?.[0];
+
+    if (!toolCall || !await toolApprovalRequired(toolCall))
+        return false;
+
+    const loader = showLoader('Processing approval...');
+    const approved = await runApprovalCheck(userMessage);
+
+    if (approved) {
+        loader.update(`executing tool: ${toolCall.function.name}`);
+        const toolResponse = await runTool(toolCall, userMessage);
+
+        loader.update(`done: ${toolCall.function.name}`);
+        await saveToolResponse(toolCall.id, toolResponse);
+    } else {
+        await saveToolResponse(
+            toolCall.id,
+            `User did not approve ${toolCall.function.name} at this time.`
+        )
+    }
+
+    loader.stop();
+
+    return true;
+}
 
 export const runAgent = async ({
-                                   turns = 10,
-                                   userMessage,
-                                   tools = []
-                               }: {
+    turns = 10,
+    userMessage,
+    tools = []
+}: {
     turns?: number;
     userMessage: string;
     tools?: { name: string; parameters: z.AnyZodObject }[];
 }) => {
-    await addMessages([{role: 'user', content: userMessage}]);
+    process.on('SIGINT', () => {
+        console.log( "\nGracefully shutting down from SIGINT (Ctrl-C)" );
+        process.exit(1);
+    });
+
+    const history = await getMessages();
+    const isApproval = await handleApprovalFlow(history, userMessage);
+
+    if (!isApproval)
+        await addMessages([{role: 'user', content: userMessage}]);
 
     const loader = showLoader('🤔');
 
@@ -34,9 +76,15 @@ export const runAgent = async ({
             const toolCall = response.tool_calls[0];
             loader.update(`executing: ${toolCall.function.name}`);
 
+            if (await toolApprovalRequired(toolCall)) {
+                loader.update('Tool requires user\'s approval!');
+                loader.stop();
+                console.log(`This tool requires your approval before executing. Are you OK proceed?`);
+                return getMessages();
+            }
+
             const toolResponse = await runTool(toolCall, userMessage);
             await saveToolResponse(toolCall.id, toolResponse);
-
             loader.update(`executed: ${toolCall.function.name}`);
         }
     }
