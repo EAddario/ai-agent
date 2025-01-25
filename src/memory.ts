@@ -49,3 +49,9 @@ export const clearLIFOMessages = async (removeLast?: number) => {
     db.data.messages = db.data.messages.slice(0, -(removeLast ?? 0));
     await db.write();
 }
+
+export const resetMemory = async () => {
+    const db = await getDb();
+    db.data.messages = [];
+    await db.write();
+}
