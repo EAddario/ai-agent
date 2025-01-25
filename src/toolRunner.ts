@@ -1,6 +1,7 @@
 import type OpenAI from 'openai';
 import {chuckNorrisJoke} from './tools/chuckNorrisJoke.ts';
 import {dadJoke} from './tools/dadJoke.ts';
+import {movieSearch} from './tools/movieSearch.ts';
 import {myIP} from './tools/myIP.ts';
 import {myLocation} from './tools/myLocation.ts';
 import {reddit} from './tools/reddit.ts';
@@ -17,6 +18,9 @@ export const runTool = async (
 
         case 'dad_joke':
             return dadJoke(input);
+
+        case 'movie_search':
+            return movieSearch(input);
 
         case 'my_ip':
             return myIP(input);
