@@ -11,6 +11,7 @@ It will return a JSON object with the icon, id, url and the joke.
 
 export const chuckNorrisJokeToolDefinition = {
     name: 'chuck_norris_joke',
+    hitlApproval: false,
     description: toolDescription,
     parameters: z.object({})
 }

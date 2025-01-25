@@ -11,6 +11,7 @@ It will return a JSON object with the title, link, subreddit name, author, and n
 
 export const redditToolDefinition = {
     name: 'reddit',
+    hitlApproval: true,
     description: toolDescription,
     parameters: z.object({})
 }
@@ -18,9 +19,9 @@ export const redditToolDefinition = {
 type Args = z.infer<typeof redditToolDefinition.parameters>;
 
 export const reddit: ToolFn<Args, string> = async ({
-                                                       // toolArgs,
-                                                       // userMessage
-                                                   }) => {
+    // toolArgs,
+    // userMessage
+}) => {
     const {data} = await fetch('https://www.reddit.com/.json').then((res) =>
         res.json()
     );

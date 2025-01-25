@@ -12,6 +12,7 @@ It will return a JSON object with the id, status and joke.
 
 export const dadJokeToolDefinition = {
     name: 'dad_joke',
+    hitlApproval: false,
     description: toolDescription,
     parameters: z.object({})
 }

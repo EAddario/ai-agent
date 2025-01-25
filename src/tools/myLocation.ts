@@ -11,6 +11,7 @@ It will return a JSON object with the ip, country and two letter ISO country cod
 
 export const myLocationToolDefinition = {
     name: 'my_location',
+    hitlApproval: false,
     description: toolDescription,
     parameters: z.object({})
 }

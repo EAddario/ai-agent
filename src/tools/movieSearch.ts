@@ -11,6 +11,7 @@ This tool must never be used if the user doesn't specifically asks for informati
 
 export const movieSearchToolDefinition = {
     name: 'movie_search',
+    hitlApproval: true,
     description: toolDescription,
     parameters: z.object({
         query: z.string().describe('The search query for finding movies'),
