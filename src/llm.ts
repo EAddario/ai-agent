@@ -1,8 +1,9 @@
 // @ts-ignore
 import {z} from 'zod';
-import {clearLIFOMessages} from './memory.js';
+import {clearLIFOMessages} from './memory.ts';
+import {getSummary} from './memory.ts';
 import {openai} from './ai.ts';
-import {systemPrompt} from './systemPrompt.ts';
+import {systemPrompt as defaultSystemPrompt} from './systemPrompt.ts';
 import {zodFunction, zodResponseFormat} from 'openai/helpers/zod';
 import type {AIMessage} from '../types.ts';
 
@@ -10,18 +11,30 @@ export const runLLM = async ({
     model = `${process.env.AI_MODEL}`,
     messages,
     temperature = 0.1,
-    tools
+    tools,
+    systemPrompt
 }: {
+    model?: string
     messages: AIMessage[]
     temperature?: number
-    model?: string
-    tools?: { name: string; parameters: z.AnyZodObject }[]
+    stream?: boolean
+    tools?: { name: string; parameters: z.AnyZodObject }[],
+    systemPrompt?: string
 }) => {
     const formattedTools = tools?.map((tool) => zodFunction(tool));
+    const summary = await getSummary();
+
     const response = await openai.chat.completions.create({
         model,
-        messages: [{role: 'system', content: systemPrompt}, ...messages],
+        messages: [
+            {
+                role: 'system',
+                content: `${systemPrompt || defaultSystemPrompt}. Chat summary so far: ${summary}`
+            },
+            ...messages
+        ],
         temperature,
+        stream: false,
         tools: formattedTools,
         tool_choice: 'auto',
         parallel_tool_calls: false
@@ -53,4 +66,16 @@ export const runApprovalCheck = async (userMessage: string) => {
     });
 
     return response.choices[0].message.parsed?.approved;
+}
+
+export const summarizeMessages = async (messages: AIMessage[]) => {
+    const response = await runLLM({
+        systemPrompt: `
+        Summarize the key points of the chat in a concise way that would be helpful as context for future interactions.
+        Make it like a play by play of the chat.`,
+        messages,
+        temperature: 0.3,
+    })
+
+    return response.content || ''
 }
