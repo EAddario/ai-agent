@@ -21,8 +21,8 @@ type Set = {
 }
 
 type Experiment = {
-  name: string
-  sets: Set[]
+    name: string
+    sets: Set[]
 }
 
 type Data = {
@@ -35,20 +35,23 @@ const defaultData: Data = {
 
 const getDb = async () => {
 
-  return await JSONFilePreset<Data>('results.json', defaultData);
+    return await JSONFilePreset<Data>('results.json', defaultData);
 }
 
 const calculateAvgScore = (runs: Run[]) => {
     const totalScores = runs.reduce((sum, run) => {
-      // @ts-ignore
-      const runAvg = run.scores.reduce((sum, score) => sum + score.score, 0) / run.scores.length;
-      return sum + runAvg }, 0);
+        // @ts-ignore
+        const runAvg = run.scores.reduce((sum, score) => sum + score.score, 0) / run.scores.length;
+
+        return sum + runAvg;
+    }, 0);
 
     return totalScores / runs.length;
 }
 
 export const loadExperiment = async (experimentName: string): Promise<Experiment | undefined> => {
     const db = await getDb();
+
     return db.data.experiments.find((e) => e.name === experimentName);
 }
 
@@ -69,9 +72,9 @@ export const saveSet = async (experimentName: string, runs: Omit<Run, 'createdAt
     const existingExperiment = db.data.experiments.find((e) => e.name === experimentName);
 
     if (existingExperiment)
-      existingExperiment.sets.push(newSet);
+        existingExperiment.sets.push(newSet);
     else
-      db.data.experiments.push({name: experimentName, sets: [newSet]});
+        db.data.experiments.push({name: experimentName, sets: [newSet]});
 
     await db.write();
 }
@@ -87,14 +90,14 @@ export const runEval = async <T = any>(
         data: { input: any; expected?: T; reference?: string | string[] }[]
         scorers: Scorer<T, any>[]
     }
-    ) => {
+) => {
     const results = await Promise.all(
         data.map(async ({input, expected, reference}) => {
             const results = await task(input);
             let context: string | string[];
             let output: string;
 
-          if (results.context) {
+            if (results.context) {
                 context = results.context;
                 output = results.response;
             } else {
