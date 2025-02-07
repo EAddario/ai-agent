@@ -13,7 +13,7 @@ type MovieMetadata = {
     year?: number;
     runtime?: number;
     rating?: number;
-    votes?:number;
+    votes?: number;
     revenue?: number;
 }
 
