@@ -1,7 +1,6 @@
 // @ts-ignore
 import {z} from 'zod';
-import {clearLIFOMessages} from './memory.ts';
-import {getSummary} from './memory.ts';
+import {clearLIFOMessages, getSummary} from './memory.ts';
 import {openai} from './ai.ts';
 import {systemPrompt as defaultSystemPrompt} from './systemPrompt.ts';
 import {zodFunction, zodResponseFormat} from 'openai/helpers/zod';
@@ -57,12 +56,12 @@ export const runApprovalCheck = async (userMessage: string) => {
         model: `${process.env.AI_MODEL}`,
         temperature: 0.1,
         response_format: zodResponseFormat(
-            z.object({ approved: z.boolean().describe('Did the user say they approved or not?') }),
+            z.object({approved: z.boolean().describe('Did the user say they approved or not?')}),
             'approval_check'
         ),
         messages: [
-            { role: 'system', content: 'Determine if the user approved using the tool. If you are not sure, then it is not approved.' },
-            { role: 'user', content: userMessage }
+            {role: 'system', content: 'Determine if the user approved using the tool. If you are not sure, then it is not approved.'},
+            {role: 'user', content: userMessage}
         ]
     });
 
