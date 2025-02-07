@@ -48,7 +48,7 @@ export const toolApprovalRequired = async (
             return dadJokeToolDefinition.hitlApproval;
 
         case 'movie_search':
-                return movieSearchToolDefinition.hitlApproval;
+            return movieSearchToolDefinition.hitlApproval;
 
         case 'my_ip':
             return myIPToolDefinition.hitlApproval;
