@@ -11,7 +11,7 @@ It will return a JSON object with the title, link, subreddit name, author, and n
 
 export const redditToolDefinition = {
     name: 'reddit',
-    hitlApproval: true,
+    hitlApproval: false,
     description: toolDescription,
     parameters: z.object({})
 }
