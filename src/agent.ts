@@ -4,7 +4,7 @@ import type {AIMessage} from "../types.js";
 import {addMessages, getMessages, saveToolResponse} from './memory.ts';
 import {logMessage, showLoader} from './ui.ts';
 import {runApprovalCheck, runLLM} from './llm.ts';
-import {toolApprovalRequired, runTool} from './toolRunner.ts';
+import {runTool, toolApprovalRequired} from './toolRunner.ts';
 
 const handleApprovalFlow = async (
     history: AIMessage[],
@@ -48,7 +48,7 @@ export const runAgent = async ({
     tools?: { name: string; parameters: z.AnyZodObject }[];
 }) => {
     process.on('SIGINT', () => {
-        console.log( "\nGracefully shutting down from SIGINT (Ctrl-C)" );
+        console.log("\nGracefully shutting down from SIGINT (Ctrl-C)");
         process.exit(1);
     });
 
