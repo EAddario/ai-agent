@@ -9,27 +9,28 @@ import type {AIMessage} from '../types.ts';
 
 export const runLLM = async ({
     model = `${process.env.AI_MODEL}`,
+    systemPrompt,
     messages,
-    temperature = 0.1,
-    tools,
-    systemPrompt
+    temperature = 0.3,
+    tools
 }: {
     model?: string
+    systemPrompt?: string
     messages: AIMessage[]
     temperature?: number
     stream?: boolean
     tools?: { name: string; parameters: z.AnyZodObject }[],
-    systemPrompt?: string
 }) => {
     const formattedTools = tools?.map((tool) => zodFunction(tool));
     const summary = await getSummary();
+    let prompt = systemPrompt || `${defaultSystemPrompt}. Chat summary so far: ${summary}`;
 
     const response = await openai.chat.completions.create({
         model,
         messages: [
             {
                 role: 'system',
-                content: `${systemPrompt || defaultSystemPrompt}. Chat summary so far: ${summary}`
+                content: prompt
             },
             ...messages
         ],
