@@ -13,7 +13,7 @@ type MovieMetadata = {
     year?: number;
     runtime?: number;
     rating?: number;
-    votes?:number;
+    votes?: number;
     revenue?: number;
 }
 
@@ -27,10 +27,7 @@ export async function indexMovieData() {
 
     const csvPath = path.join(process.cwd(), './src/rag/imdb_movie_dataset.csv');
     const csvData = fs.readFileSync(csvPath, 'utf-8');
-    const movies = parse(csvData, {
-        columns: true,
-        skip_empty_lines: true,
-    });
+    const movies = parse(csvData, {columns: true, skip_empty_lines: true});
 
     spinner.text = 'Starting vector indexing...';
 
