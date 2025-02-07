@@ -1,10 +1,19 @@
 import {JSONFilePreset} from 'lowdb/node';
-import { summarizeMessages } from './llm.ts';
+import {logMessage} from "./ui.ts";
+import {summarizeMessages} from './llm.ts';
 import {v4 as uuidv4} from 'uuid';
 import type {AIMessage} from '../types.ts';
 
-const messageWindowSize = 5;
-const messageMemorySize = 5;
+const messageMemorySize = 10;
+const messageSummarySize = 30;
+type Data = {
+    summary: string,
+    messages: MessageWithMetadata[]
+}
+const defaultData: Data = {
+    summary: '',
+    messages: []
+}
 
 export type MessageWithMetadata = AIMessage & { id: string, createdAt: string }
 
@@ -18,16 +27,6 @@ export const removeMetadata = (message: MessageWithMetadata): AIMessage => {
     const {id, createdAt, ...messageWithoutMetadata} = message;
 
     return messageWithoutMetadata;
-}
-
-type Data = {
-    summary: string,
-    messages: MessageWithMetadata[]
-}
-
-const defaultData: Data = {
-    summary: '',
-    messages: []
 }
 
 export const getDb = async () => {
@@ -52,15 +51,13 @@ export const addMessages = async (messages: AIMessage[]) => {
                     chat.push(`${msg.role.toUpperCase()}: ${msg.content}`);
             }
 
-            if (chat.length === messageMemorySize) {
-                chat = chat.reverse();
+            if (chat.length === messageSummarySize)
                 break;
-            }
 
         }
 
-        const oldestMessages: AIMessage[] = [{ role: 'user', content: chat.join(' ') }]
-
+        const oldestMessages: AIMessage[] = [{ role: 'user', content: chat.reverse().join(' ') }];
+        logMessage({ role: 'assistant', content: `summarising last ${messageSummarySize} messages` });
         db.data.summary = await summarizeMessages(oldestMessages) as string;
     }
 
@@ -70,10 +67,10 @@ export const addMessages = async (messages: AIMessage[]) => {
 export const getMessages = async () => {
     const db = await getDb();
     const messages = db.data.messages.map(removeMetadata);
-    const lastMessages = messages.slice(-messageWindowSize);
+    const lastMessages = messages.slice(-messageMemorySize);
 
     if (lastMessages[0]?.role === 'tool') {
-        const additionalMessage = messages[messages.length - messageWindowSize + 1];
+        const additionalMessage = messages[messages.length - messageMemorySize + 1];
         if (additionalMessage) {
             return [...[additionalMessage], ...lastMessages]
         }
