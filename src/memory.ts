@@ -4,7 +4,7 @@ import {v4 as uuidv4} from 'uuid';
 import type {AIMessage} from '../types.ts';
 
 const messageWindowSize = 5;
-const messageSummarySize = 10;
+const messageMemorySize = 5;
 
 export type MessageWithMetadata = AIMessage & { id: string, createdAt: string }
 
@@ -39,8 +39,28 @@ export const addMessages = async (messages: AIMessage[]) => {
     const db = await getDb();
     db.data.messages.push(...messages.map(addMetadata));
 
-    if (db.data.messages.length >= messageSummarySize) {
-        const oldestMessages = db.data.messages.slice(0, messageWindowSize).map(removeMetadata);
+    if (db.data.messages.length % messageMemorySize === 0) {
+        const messages = db.data.messages.map(removeMetadata);
+        let chat:string[] = [];
+
+        for (let idx = messages.length - 1; idx >= 0; idx--) {
+
+            if (messages[idx].role === 'user' || messages[idx].role === 'assistant') {
+                const msg = messages[idx] as {role: 'user' | 'assistant', content: string};
+
+                if (msg.content)
+                    chat.push(`${msg.role.toUpperCase()}: ${msg.content}`);
+            }
+
+            if (chat.length === messageMemorySize) {
+                chat = chat.reverse();
+                break;
+            }
+
+        }
+
+        const oldestMessages: AIMessage[] = [{ role: 'user', content: chat.join(' ') }]
+
         db.data.summary = await summarizeMessages(oldestMessages) as string;
     }
 
@@ -53,7 +73,7 @@ export const getMessages = async () => {
     const lastMessages = messages.slice(-messageWindowSize);
 
     if (lastMessages[0]?.role === 'tool') {
-        const additionalMessage = messages[messages.length - (messageWindowSize + 1)];
+        const additionalMessage = messages[messages.length - messageWindowSize + 1];
         if (additionalMessage) {
             return [...[additionalMessage], ...lastMessages]
         }
@@ -63,14 +83,12 @@ export const getMessages = async () => {
 }
 
 export const getSummary = async () => {
-    const db = await getDb()
+    const db = await getDb();
+
     return db.data.summary
 }
 
-export const saveToolResponse = async (
-    toolCallId: string,
-    toolResponse: string
-) => {
+export const saveToolResponse = async (toolCallId: string, toolResponse: string) => {
 
     return await addMessages([{role: 'tool', content: toolResponse, tool_call_id: toolCallId}]);
 }
