@@ -40,12 +40,12 @@ export const addMessages = async (messages: AIMessage[]) => {
 
     if (db.data.messages.length % messageMemorySize === 0) {
         const messages = db.data.messages.map(removeMetadata);
-        let chat:string[] = [];
+        let chat: string[] = [];
 
         for (let idx = messages.length - 1; idx >= 0; idx--) {
 
             if (messages[idx].role === 'user' || messages[idx].role === 'assistant') {
-                const msg = messages[idx] as {role: 'user' | 'assistant', content: string};
+                const msg = messages[idx] as { role: 'user' | 'assistant', content: string };
 
                 if (msg.content)
                     chat.push(`${msg.role.toUpperCase()}: ${msg.content}`);
@@ -56,8 +56,8 @@ export const addMessages = async (messages: AIMessage[]) => {
 
         }
 
-        const oldestMessages: AIMessage[] = [{ role: 'user', content: chat.reverse().join(' ') }];
-        logMessage({ role: 'assistant', content: `summarising last ${messageSummarySize} messages` });
+        const oldestMessages: AIMessage[] = [{role: 'user', content: chat.reverse().join(' ')}];
+        logMessage({role: 'assistant', content: `summarising last ${messageSummarySize} messages`});
         db.data.summary = await summarizeMessages(oldestMessages) as string;
     }
 
