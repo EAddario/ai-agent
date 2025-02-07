@@ -39,11 +39,11 @@ const handleApprovalFlow = async (
 }
 
 export const runAgent = async ({
-    turns = 10,
+    limit = 1,
     userMessage,
     tools = []
 }: {
-    turns?: number;
+    limit?: number;
     userMessage: string;
     tools?: { name: string; parameters: z.AnyZodObject }[];
 }) => {
@@ -59,8 +59,14 @@ export const runAgent = async ({
         await addMessages([{role: 'user', content: userMessage}]);
 
     const loader = showLoader('🤔');
+    let turns = 0;
 
     while (true) {
+        if (turns++ > limit) {
+            loader.stop();
+            return getMessages();
+        }
+
         const history = await getMessages();
         const response = await runLLM({messages: history, tools});
 
