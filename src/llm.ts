@@ -69,13 +69,18 @@ export const runApprovalCheck = async (userMessage: string) => {
 }
 
 export const summarizeMessages = async (messages: AIMessage[]) => {
-    const response = await runLLM({
-        systemPrompt: `
-        Summarize the key points of the chat in a concise way that would be helpful as context for future interactions.
-        Make it like a play by play of the chat.`,
-        messages,
-        temperature: 0.3,
-    })
+    const summary = await getSummary();
+    const prompt = `The conversation's summary so far is: "${summary}".
+        Using the summary and the following messages, please provide a new summary of the key points of the chat.
+        The new summary should be concise in way that would be helpful as context for future interactions.`;
 
-    return response.content || ''
+    const response = await runLLM({
+        systemPrompt: prompt,
+        messages,
+        temperature: 0.1
+    });
+
+    console.log(`\n\nPrevious summary: ${summary}\n\nPrompt: ${prompt}\n\nSummarizing messages: ${JSON.stringify(messages)}\n\nResponse: ${JSON.stringify(response)}\n`);
+
+    return response.content || '';
 }
