@@ -81,7 +81,5 @@ export const summarizeMessages = async (messages: AIMessage[]) => {
         temperature: 0.1
     });
 
-    console.log(`\n\nPrevious summary: ${summary}\n\nPrompt: ${prompt}\n\nSummarizing messages: ${JSON.stringify(messages)}\n\nResponse: ${JSON.stringify(response)}\n`);
-
     return response.content || '';
 }
