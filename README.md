@@ -1,6 +1,6 @@
 # AI Agent
 
-AI Agent is proof of concept for autonomous agentic AI built with TypeScript. It integrates multiple tools such as fetching Reddit posts, telling jokes, searching for movies, and retrieving user-specific information like IP address and location. The AI agent processes user inputs, and decides to use the appropriate tool based on the context.
+AI Agent is a proof of concept for autonomous agentic AI built with TypeScript. It integrates multiple tools such as fetching Reddit posts, telling jokes, searching for movies, and retrieving user-specific information like IP address and location. The AI agent processes user inputs, and decides to use the appropriate tool based on the context.
 
 ## Features
 
